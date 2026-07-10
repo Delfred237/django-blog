@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Mon Super Blog{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'blogapp/style.css' %}">
+  </head>
+  <body>
+    <nav>
+      <a href="{% url 'blogapp:home' %}">Accueil</a>
+      {% if user.is_authenticated %}
+      <span class="user-greeting">Bonjour, <a href="{% url 'blogapp:user_profile' username=user.username %}">{{ user.username }}</a>!</span>
+      <a href="{% url 'blogapp:create_article' %}">Nouvel Article</a>
+      <a href="{% url 'blogapp:logout' %}">Déconnexion</a>
+      {% else %}
+      <a href="{% url 'blogapp:login' %}">Connexion</a>
+      <a href="{% url 'blogapp:register' %}">Inscription</a>
+      {% endif %}
+    </nav>
+
+    <div class="container">
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% block content %} 
+      {% endblock %}
+    </div>
+
+    <footer>
+       <p>(c) {% now "Y" %} Mon Super Blog. Tous droits réservés.</p>
+   </footer>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+{% extends "base.html" %} 
+{% block title %}Accueil - Mon Super Blog{% endblock%} 
+{% block content %}
+<h1>Bienvenue sur Mon Super Blog !</h1>
+<p>C'est la page d'accueil. Bientôt, vous verrez les articles ici.</p>
+
+{% if user.is_authenticated %}
+<p>Vous êtes connecté en tant que {{ user.username }}.</p>
+<a href="{% url 'blogapp:create_article' %}">Écrire un nouvel article ?</a></p>
+{% else %}
+<p>
+  Vous pouvez vous
+
+  <a href="{% url 'blogapp:login' %}">connecter</a>
+
+  pour écrire des articles ou vous
+
+  <a href="{% url 'blogapp:register' %}">inscrire</a>.
+</p>
+{% endif %} 
+
+<h2>Nos derniers articles :</h2>
+  {% if articles %}
+    <ul class="article-list">
+      {% for article_item in articles %} <!-- Renommé pour éviter conflit avec variable 'article' dans d'autres contextes -->
+        <li>
+          <h3>
+            <a href="{% url 'blogapp:detail_article' pk=article_item.pk %}">
+              {{ article_item.title }}
+            </a>
+          </h3>
+          <p class="article-meta">
+                       Par : <a href="{% url 'blogapp:user_profile' username=article_item.autor.username %}">{{ article_item.autor.username }}</a> | Publié le : {{ article_item.created_at|date:"d M Y, H:i" }}
+          </p>
+          <p>{{ article_item.content|truncatewords:30 }}</p> <!--Affiche les 30 premiers mots -->
+        </li>
+      {% endfor %}
+    </ul>
+
+<div class="pagination">
+  <span class="step-links">
+    {% if articles.has_previous %}
+      <a href="?page=1" class="button-link">&laquo; Première</a>
+      <a href="?page={{ articles.previous_page_number }}" class="button-link">Précédente</a>
+    {% else %}
+      <span class="disabled-link">&laquo; Première</span>
+      <span class="disabled-link">Précédente</span>
+    {% endif %}
+
+      <span class="current-page">
+        Page {{ articles.number }} sur {{ articles.paginator.num_pages }}.
+      </span>
+
+    {% if articles.has_next %}
+      <a href="?page={{ articles.next_page_number }}" class="button-link">Suivante</a>
+      <a href="?page={{ articles.paginator.num_pages }}" class="button-link">Dernière &raquo;</a>
+    {% else %}
+      <span class="disabled-link">Suivante</span>
+      <span class="disabled-link">Dernière &raquo;</span>
+    {% endif %}
+  </span>
+</div>
+
+  {% else %}
+    <p>Il n'y a pas encore d'articles sur ce blog. Soyez le premier à en écrire un !</p>
+  {% endif %}
+
+{% endblock %}

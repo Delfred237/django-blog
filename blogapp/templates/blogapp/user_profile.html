@@ -1,0 +1,41 @@
+{% extends "base.html" %} 
+{% block title %}Profil de {{user.username }} - Mon Super Blog{% endblock %} 
+{% block content%}
+<div class="profil-header">
+  <h1>Profil de {{ user.username }}</h1>
+  <p>Membre depuis : {{ user.date_joined|date:"d F Y" }}</p>
+  {% if user.is_authenticated and user == user %}
+    <p><a href="#" class="button-link">Modifier mon profil</a></p>
+  {% endif %}
+</div>
+
+<hr class="profil-separator" />
+
+<div class="profil-articles">
+  <h2>
+    Articles écrits par {{ user.username }} ({{ articles.count }}) :
+  </h2>
+  {% if articles %}
+  <ul class="article-list">
+    {% for article_item in articles %}
+    <li>
+      <h3>
+        <a href="{% url 'blogapp:detail_article' pk=article_item.pk %}"
+          >{{ article_item.title }}</a>
+      </h3>
+      <p class="article-meta">
+        Publié le : {{ article_item.created_at|date:"d M Y, H:i" }} 
+        {% if article_item.created_at != article_item.updated_at %} 
+        | Modifié
+        le : {{ article_item.updated_at|date:"d M Y, H:i" }} 
+        {% endif %}
+      </p>
+      <p>{{ article_item.content|truncatewords:20 }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>{{ user.username }} n'a pas encore écrit d'articles.</p>
+  {% endif %}
+</div>
+{% endblock %}
